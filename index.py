@@ -129,19 +129,21 @@ def unzip_files(name, clean, data):
 
     for a in data:
 
-        clean_up_repo(name)
+        if a["id"] not in repo.tags:
 
-        zname = join(temp_path, a["id"] + ".zip")
+            clean_up_repo(name)
 
-        zip_ref = zipfile.ZipFile(zname, "r")
-        zip_ref.extractall(zfolder)
-        zip_ref.close()
+            zname = join(temp_path, a["id"] + ".zip")
 
-        shutil.rmtree(zfolder + "/META-INF", ignore_errors=True)
+            zip_ref = zipfile.ZipFile(zname, "r")
+            zip_ref.extractall(zfolder)
+            zip_ref.close()
 
-        repo.git.add("*")
-        repo.git.commit(m="Version " + a["id"] + "\n" + a["desc"])
-        repo.create_tag(a["id"])
+            shutil.rmtree(zfolder + "/META-INF", ignore_errors=True)
+
+            repo.git.add("*")
+            repo.git.commit(m="Version " + a["id"] + "\n" + a["desc"])
+            repo.create_tag(a["id"])
 
 
 extension_name = "night_owl"
@@ -155,12 +157,12 @@ print("Got all data!")
 print()
 
 print("Start download all addons archives")
-download_xpi(extension_name, True, data)
+download_xpi(extension_name, False, data)
 print("Got all files!")
 print()
 
 print("Start archive unzipping and repo creation")
-unzip_files(extension_name, True, data)
+unzip_files(extension_name, False, data)
 print("Repo created!")
 print()
 
